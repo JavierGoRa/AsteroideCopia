@@ -66,7 +66,7 @@ public class Asteroids extends Application {
 //Creacion de los objetos asteroides
         Asteroide a = new Asteroide();
         for (int i= 0; i <3; i++){ 
-            a.asteroideObj(root);
+           a.asteroideObj(root);
         }        
         
         //Objeto nave
