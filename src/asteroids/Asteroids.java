@@ -5,6 +5,7 @@ package asteroids;
 
 
 
+import java.util.Random;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -15,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 /**
@@ -51,7 +53,13 @@ public class Asteroids extends Application {
     double asteroideVelX = 3;
     double asteroideVelY = 3;
     
+    double asielto;
+    
+    
+    
     Circle misil = new Circle();
+    
+    Polygon asteroide = new Polygon();
     Pane root;
     
     @Override
@@ -63,10 +71,24 @@ public class Asteroids extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-//Creacion de los objetos asteroides
-        Asteroide a = new Asteroide();
+        //Creacion de los objetos asteroides
+        Asteroide ast = new Asteroide();
         for (int i= 0; i <3; i++){ 
-           a.asteroideObj(root);
+            ast.asteroideObj(root);
+//            asteroide = new Polygon();
+//            asteroide.getPoints().addAll(new Double []{
+//                0.0, 0.0,
+//                40.0, 20.0,
+//                60.0, 60.0,
+//                10.0, 60.0
+//            });
+//            asteroide.setFill(Color.RED);
+//            root.getChildren().add(asteroide);
+//            Random randomAsteroide = new Random();
+//            asteroideX = randomAsteroide.nextInt(800);
+//            asteroideY = randomAsteroide.nextInt(600);
+//            asteroide.setTranslateX(asteroideX);
+//            asteroide.setTranslateY(asteroideY);
         }        
         
         //Objeto nave
@@ -119,8 +141,6 @@ public class Asteroids extends Application {
                 asteroideX += asteroideVelX;
                 asteroideY += asteroideVelY;
 
-                System.out.println("posAsteroideX: " + asteroideX);
-                System.out.println("posMisilY :" + asteroideY);
                 
 //              La nave gira constantemente
                 anguloNave += anguloVelNave;
@@ -147,6 +167,14 @@ public class Asteroids extends Application {
 //                Si el valor es menor de 0 cambia a 360
                 else if (anguloNave<0){
                     anguloNave=360;
+                }
+                
+                Shape.intersect(misil,asteroide);
+                Shape shapeColision = Shape.intersect(misil, asteroide);
+                boolean colisionVacia = shapeColision.getBoundsInLocal().isEmpty();
+                if (colisionVacia == false) {
+                    asielto += 1;
+                    System.out.println("ACIERTO = " + asielto);
                 }
             };
         };
