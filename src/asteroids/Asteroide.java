@@ -21,7 +21,7 @@ import javafx.scene.shape.Polygon;
 
 
 
-public class Asteroide1{
+public class Asteroide{
     int SCENE_TAM_X = 800;
     int SCENE_TAM_Y = 600;
 
