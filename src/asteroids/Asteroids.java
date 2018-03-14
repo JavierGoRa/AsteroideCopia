@@ -6,15 +6,22 @@ package asteroids;
 
 
 import java.util.ArrayList;
+import java.util.Random;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -45,19 +52,26 @@ public class Asteroids extends Application {
     double posMisilX; 
     double posMisilY; 
     
-    double asteroideX;
-    double asteroideY;
+    double posAsteroideX;
+    double posAsteroideY;
     
-    double asteroideVelX = 3;
-    double asteroideVelY = 3;
+    double asteroideVelX = 1;
+    double asteroideVelY = 1;
     
-    double asierto;
+    double textTamaño = 20;
+    double textTamañoFrase = 30;
+    Text textScore;
+    double score;
     
-    double asielto;
-    ArrayList<String> listaMisil;
+    double rotateAsteroide;
+    double velRotateAsteroide = 0.1;
     
-    Circle misil = new Circle();
+    Asteroide ast = new Asteroide();
     
+    Polygon navePoligono;
+    
+    Circle misilCirculo = new Circle();
+    ArrayList <Asteroide> listaAsteroide = new ArrayList();
     Pane root;
     
     @Override
@@ -69,27 +83,33 @@ public class Asteroids extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        //Creacion de los objetos asteroides
-        Asteroide ast = new Asteroide();
+//      Creacion de los objetos asteroides
+        
         for (int i= 0; i <3; i++){ 
             ast.asteroideObj(root);
+            Random randomAsteroide = new Random();
+            posAsteroideX = randomAsteroide.nextInt(800);
+            posAsteroideY = randomAsteroide.nextInt(600);
+            ast.asteroidePoligono.setTranslateX(posAsteroideX);
+            ast.asteroidePoligono.setTranslateY(posAsteroideY);
+            listaAsteroide.add(ast);
         }        
         
         //Objeto nave
-        Polygon nave = new Polygon();
-        nave.getPoints().addAll(new Double []{
+        navePoligono = new Polygon();
+        navePoligono.getPoints().addAll(new Double []{
             0.0, 0.0,
             30.0, 10.0,
             0.0, 20.0
         });
         //posicion de la nave
-        nave.setTranslateX(posNaveX);
-        nave.setTranslateY(posNaveY);
-        nave.setFill(Color.BLACK);
-        nave.setRotate(anguloNave);
+        navePoligono.setTranslateX(posNaveX);
+        navePoligono.setTranslateY(posNaveY);
+        navePoligono.setFill(Color.BLACK);
+        navePoligono.setRotate(anguloNave);
 //        nave.setCenterX(15);
 //        nave.setCenterY(5);
-        root.getChildren().add(nave);
+        root.getChildren().add(navePoligono);
         //Objeto fuego rojo
         Polygon furo = new Polygon();
         furo.getPoints().addAll(new Double []{
@@ -110,31 +130,80 @@ public class Asteroids extends Application {
         fuam.setFill(Color.YELLOW);
         root.getChildren().add(fuam);
         
-//      Arraylist de la bala
-//        listaMisil = new ArrayList();
+        //Caja donde va a ir los textos
+        HBox paneScores = new HBox();
+        paneScores.setTranslateY(20);
+        paneScores.setMinWidth(SCENE_TAM_X);
+        paneScores.setAlignment(Pos.CENTER);
+        paneScores.setSpacing(250);
+        root.getChildren().add(paneScores);
+
+        //
+        HBox paneCurrentScore = new HBox();
+        paneCurrentScore.setSpacing(10);
+        paneScores.getChildren().add(paneCurrentScore);
         
+        //Texto que recoje la puntuacion
+        Text textoPuntuacion = new Text("Score:");
+        textoPuntuacion.setFont(Font.font(textTamaño));
+        textoPuntuacion.setFill(Color.BLACK);
+        paneCurrentScore.getChildren().add(textoPuntuacion);
+        textScore = new Text("0");
+        textScore.setFont(Font.font(textTamaño));
+        textScore.setFill(Color.BLACK);
+        paneCurrentScore.getChildren().add(textScore);
+        
+        HBox paneVersion = new HBox();
+        paneVersion.setSpacing(10);
+        paneVersion.setAlignment(Pos.TOP_RIGHT);
+        paneScores.getChildren().add(paneVersion);
+        
+        Text version = new Text("Version 1.0");
+        version.setFont(Font.font(textTamaño));
+        version.setFill(Color.BLACK);
+        paneVersion.getChildren().add(version);
         
         AnimationTimer animationnave = new AnimationTimer(){
             @Override
             public void handle(long now) {
                 
-                System.out.println(posNaveX);
                 movimientoNave();
-                nave.setTranslateX(posNaveX);
-                nave.setTranslateY(posNaveY);
+                navePoligono.setTranslateX(posNaveX);
+                navePoligono.setTranslateY(posNaveY);
 
                 movimientoMisil();
-                misil.setTranslateX(posMisilX);
-                misil.setTranslateY(posMisilY);                
+                misilCirculo.setTranslateX(posMisilX);
+                misilCirculo.setTranslateY(posMisilY);                
                 
 //              Movimiento asteroides
-                asteroideX += asteroideVelX;
-                asteroideY += asteroideVelY;
-
+                for (int i= 0; i <listaAsteroide.size(); i++){ 
+                ast = listaAsteroide.get(i);
+                posAsteroideX += asteroideVelX;
+                posAsteroideY += asteroideVelY;
+                ast.asteroidePoligono.setTranslateX(posAsteroideX);
+                ast.asteroidePoligono.setTranslateY(posAsteroideY);
+                }
+                //Giro del asteroide
+                ast.asteroidePoligono.setRotate(rotateAsteroide += velRotateAsteroide);
+                
+                //En caso de que el asteroide sobrepase el limite vuelve a la pantalla
+                if(posAsteroideX > SCENE_TAM_X){
+                    posAsteroideX = 0;
+                }
+                if(posAsteroideX < 0){
+                    posAsteroideX = SCENE_TAM_X;
+                }
+                if(posAsteroideY > SCENE_TAM_Y){
+                    posAsteroideY = 0;
+                }
+                if(posAsteroideY < 0){
+                    posAsteroideY = SCENE_TAM_Y;
+                }
+                
                 
 //              La nave gira constantemente
                 anguloNave += anguloVelNave;
-                nave.setRotate(anguloNave);
+                navePoligono.setRotate(anguloNave);
                 
 //              En case de que la nave toque cada borde, vuelve al otro lado de la pantalla
                 if(posNaveX > SCENE_TAM_X){
@@ -158,20 +227,26 @@ public class Asteroids extends Application {
                 else if (anguloNave<0){
                     anguloNave=360;
                 }
-                
-                Shape.intersect(nave,ast.asteroidePoligono);
-                Shape colisionNaveAst = Shape.intersect(nave, ast.asteroidePoligono);
+                //Detector de colision Nave con el Arteroide
+                Shape.intersect(navePoligono,ast.asteroidePoligono);
+                Shape colisionNaveAst = Shape.intersect(navePoligono, ast.asteroidePoligono);
                 boolean colisionVaciaNA = colisionNaveAst.getBoundsInLocal().isEmpty();
                 if (colisionVaciaNA == false) {
-                    root.getChildren().remove(nave);
+                    root.getChildren().remove(navePoligono);
+                    finPartida();
                 }
-                
-                Shape.intersect(misil,ast.asteroidePoligono);
-                Shape colisionMisilAst = Shape.intersect(misil, ast.asteroidePoligono);
+                //Detector de colision Misil con Asteroide
+                Shape.intersect(misilCirculo,ast.asteroidePoligono);
+                Shape colisionMisilAst = Shape.intersect(misilCirculo, ast.asteroidePoligono);
                 boolean colisionVaciaMA = colisionMisilAst.getBoundsInLocal().isEmpty();
                 if (colisionVaciaMA == false) {
-                    root.getChildren().add(misil);
-                    root.getChildren().add(ast.asteroidePoligono);
+                    root.getChildren().remove(misilCirculo);
+                    root.getChildren().remove(ast.asteroidePoligono);
+//                    El Score incrementa en 1
+                    score = score +1;
+//                    Muestra el actual score
+                    textScore.setText(String.valueOf(score));                
+                    System.out.println(score);
                 }
             };
         };
@@ -180,8 +255,26 @@ public class Asteroids extends Application {
         scene.setOnKeyPressed((KeyEvent event) -> {
             switch(event.getCode()) {
                 case SPACE:
-//                    listaMisil.add();
-                    misilCompleto();
+                    misilCirculo = new Circle();
+                    misilCirculo.setFill(Color.RED);
+                    misilCirculo.setRadius(3);
+                    root.getChildren().add(misilCirculo);
+                    
+    //              valora la bola para que la coloque donde este la nave
+                    posMisilX = posNaveX + 15;    
+                    posMisilY = posNaveY + 10;
+                    
+                    //Coloca el misil donde este la nave
+                    misilCirculo.setTranslateX(posMisilX);
+                    misilCirculo.setTranslateY(posMisilY);
+                    
+                    //Valora la aceleracion del misil
+                    misilAce = 5;
+                    
+ //                 Calcula el angulo de la nave para disparar en su dirección                   
+                    double anguloMisilRadianes = Math.toRadians(anguloNave);
+                    misilVelocidadX = Math.cos(anguloMisilRadianes) * misilAce;
+                    misilVelocidadY = Math.sin(anguloMisilRadianes) * misilAce;
                     break;
                 case RIGHT:
 //                  Si se pulsa derecha la nave gira a una velocidad de 5 grados//
@@ -209,6 +302,8 @@ public class Asteroids extends Application {
                     if(naveVelocidadY < -4){
                     naveVelocidadY = -4;
                     }
+                case ENTER:
+//                    reinicioPartida();
             }
         });
 //        Soltar boton
@@ -238,23 +333,42 @@ public class Asteroids extends Application {
         //Posicion de la bola en Y
         posMisilY += misilVelocidadY;
     }    
-    public void misilCompleto(){
-        misil = new Circle();
-        misil.setFill(Color.RED);
-        misil.setRadius(3);
-        root.getChildren().add(misil);
-//      valora la bola para que la coloque donde este la nave
-        posMisilX = posNaveX + 15;    
-        posMisilY = posNaveY + 10;
-        //Coloca el misil donde este la nave
-        misil.setTranslateX(posMisilX);
-        misil.setTranslateY(posMisilY);
-        //Valora la aceleracion del misil
-        misilAce = 5;
-//      Calcula el angulo de la nave para disparar en su dirección                   
-        double anguloMisilRadianes = Math.toRadians(anguloNave);
-        misilVelocidadX = Math.cos(anguloMisilRadianes) * misilAce;
-        misilVelocidadY = Math.sin(anguloMisilRadianes) * misilAce;
-
+    public void finPartida(){
+        //Caja donde va a ir los textos
+        HBox paneEnd = new HBox();
+        paneEnd.setTranslateY(SCENE_TAM_Y/2);
+        paneEnd.setMinWidth(SCENE_TAM_X);
+        paneEnd.setAlignment(Pos.CENTER);
+        paneEnd.setSpacing(100);
+        root.getChildren().add(paneEnd);
+        //Caja para la puntuacion máxima
+        HBox paneMaxScore = new HBox();
+        paneMaxScore.setSpacing(10);
+        paneEnd.getChildren().add(paneMaxScore);
+        //Texto que recoje la puntuacion máxima
+        Text textoPuntuacion = new Text("MaxScore:");
+        textoPuntuacion.setFont(Font.font(textTamaño));
+        textoPuntuacion.setFill(Color.BLACK);
+        paneMaxScore.getChildren().add(textoPuntuacion);
+        textScore = new Text("score");
+        textScore.setFont(Font.font(textTamaño));
+        textScore.setFill(Color.BLACK);
+        textScore.setText(String.valueOf(score));
+        paneMaxScore.getChildren().add(textScore);
+        //Caja donde ira el Game Over
+        HBox paneGameOver = new HBox();
+        paneGameOver.setSpacing(10);
+        paneGameOver.setAlignment(Pos.TOP_RIGHT);
+        paneEnd.getChildren().add(paneGameOver);
+        //Texto del Game Over
+        Text gameOver = new Text("Game Over");
+        gameOver.setFont(Font.font(textTamaño));
+        gameOver.setFill(Color.BLACK);
+        paneGameOver.getChildren().add(gameOver);
+    }
+    public void reinicioPartida(){
+        posNaveX = SCENE_TAM_X/2;
+        posNaveY = SCENE_TAM_Y/2;
+        root.getChildren().add(navePoligono);
     }
 }
