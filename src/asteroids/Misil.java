@@ -15,11 +15,13 @@ import javafx.scene.shape.Circle;
  */
 public class Misil {
     Circle misilCirculo;
-    public void misilObj(Pane root){
+    public Misil(Pane root){
         misilCirculo = new Circle();
         misilCirculo.setFill(Color.RED);
         misilCirculo.setRadius(3);
         root.getChildren().add(misilCirculo); 
     }
-    
+    public Circle getMisil(){
+        return misilCirculo;
+    }
 }

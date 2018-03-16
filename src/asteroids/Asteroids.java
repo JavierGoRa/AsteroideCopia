@@ -33,16 +33,6 @@ public class Asteroids extends Application {
     int SCENE_TAM_X = 800;
     int SCENE_TAM_Y = 600;
     
-    double anguloNave = 360;
-    int anguloVelNave;
-    
-    double posNaveX = SCENE_TAM_X/2;
-    double posNaveY = SCENE_TAM_Y/2;
-    
-    double naveVelocidadX;
-    double naveVelocidadY;
-    
-    double naveAceleracion;
     
     double misilAce;
     
@@ -51,27 +41,25 @@ public class Asteroids extends Application {
     
     double posMisilX; 
     double posMisilY; 
+
     
-    double posAsteroideX;
-    double posAsteroideY;
     
-    double asteroideVelX = 1;
-    double asteroideVelY = 1;
     
     double textTamaño = 20;
     double textTamañoFrase = 30;
     Text textScore;
     double score;
     
-    double rotateAsteroide;
-    double velRotateAsteroide = 0.1;
     
-    Asteroide ast = new Asteroide();
     
-    Polygon navePoligono;
+    Nave nave;
     
-    Circle misilCirculo = new Circle();
-    ArrayList <Asteroide> listaAsteroide = new ArrayList();
+    Astero asteroide;
+    
+    
+    Misil misil;
+    ArrayList <Astero> listaAsteroide = new ArrayList();
+    ArrayList <Misil> listaMisil = new ArrayList();
     Pane root;
     
     @Override
@@ -86,30 +74,13 @@ public class Asteroids extends Application {
 //      Creacion de los objetos asteroides
         
         for (int i= 0; i <3; i++){ 
-            ast.asteroideObj(root);
-            Random randomAsteroide = new Random();
-            posAsteroideX = randomAsteroide.nextInt(800);
-            posAsteroideY = randomAsteroide.nextInt(600);
-            ast.asteroidePoligono.setTranslateX(posAsteroideX);
-            ast.asteroidePoligono.setTranslateY(posAsteroideY);
-            listaAsteroide.add(ast);
-        }        
+            asteroide = new Astero(root);
+
+            listaAsteroide.add(asteroide);
+
+        }
+        nave = new Nave(root);
         
-        //Objeto nave
-        navePoligono = new Polygon();
-        navePoligono.getPoints().addAll(new Double []{
-            0.0, 0.0,
-            30.0, 10.0,
-            0.0, 20.0
-        });
-        //posicion de la nave
-        navePoligono.setTranslateX(posNaveX);
-        navePoligono.setTranslateY(posNaveY);
-        navePoligono.setFill(Color.BLACK);
-        navePoligono.setRotate(anguloNave);
-//        nave.setCenterX(15);
-//        nave.setCenterY(5);
-        root.getChildren().add(navePoligono);
         //Objeto fuego rojo
         Polygon furo = new Polygon();
         furo.getPoints().addAll(new Double []{
@@ -167,87 +138,55 @@ public class Asteroids extends Application {
             @Override
             public void handle(long now) {
                 
-                movimientoNave();
-                navePoligono.setTranslateX(posNaveX);
-                navePoligono.setTranslateY(posNaveY);
-
+                nave.mover();
+                nave.giro();
                 movimientoMisil();
-                misilCirculo.setTranslateX(posMisilX);
-                misilCirculo.setTranslateY(posMisilY);                
+                
+                for (int i= 0; i <listaMisil.size(); i++){ 
+                    misil = listaMisil.get(i);
+                    misil.getMisil().setTranslateX(posMisilX);
+                    misil.getMisil().setTranslateY(posMisilY);         
+                }
                 
 //              Movimiento asteroides
                 for (int i= 0; i <listaAsteroide.size(); i++){ 
-                ast = listaAsteroide.get(i);
-                posAsteroideX += asteroideVelX;
-                posAsteroideY += asteroideVelY;
-                ast.asteroidePoligono.setTranslateX(posAsteroideX);
-                ast.asteroidePoligono.setTranslateY(posAsteroideY);
+                    asteroide = listaAsteroide.get(i);
+                    asteroide.mover();
                 }
-                //Giro del asteroide
-                ast.asteroidePoligono.setRotate(rotateAsteroide += velRotateAsteroide);
-                
-                //En caso de que el asteroide sobrepase el limite vuelve a la pantalla
-                if(posAsteroideX > SCENE_TAM_X){
-                    posAsteroideX = 0;
-                }
-                if(posAsteroideX < 0){
-                    posAsteroideX = SCENE_TAM_X;
-                }
-                if(posAsteroideY > SCENE_TAM_Y){
-                    posAsteroideY = 0;
-                }
-                if(posAsteroideY < 0){
-                    posAsteroideY = SCENE_TAM_Y;
-                }
-                
-                
-//              La nave gira constantemente
-                anguloNave += anguloVelNave;
-                navePoligono.setRotate(anguloNave);
-                
-//              En case de que la nave toque cada borde, vuelve al otro lado de la pantalla
-                if(posNaveX > SCENE_TAM_X){
-                    posNaveX = 0;
-                }
-                if(posNaveX < 0){
-                    posNaveX = SCENE_TAM_X;
-                }
-                if(posNaveY > SCENE_TAM_Y){
-                    posNaveY = 0;
-                }
-                if(posNaveY < 0){
-                    posNaveY = SCENE_TAM_Y;
-                }
-                
-//                Si el valor es mayor que 360 cambia a 0
-                if (anguloNave>360){
-                    anguloNave=0;
-                } 
-//                Si el valor es menor de 0 cambia a 360
-                else if (anguloNave<0){
-                    anguloNave=360;
+                for (int i= 0; i <listaAsteroide.size(); i++){ 
+                    asteroide = listaAsteroide.get(i);
+                    asteroide.limiteAsteroide();
                 }
                 //Detector de colision Nave con el Arteroide
-                Shape.intersect(navePoligono,ast.asteroidePoligono);
-                Shape colisionNaveAst = Shape.intersect(navePoligono, ast.asteroidePoligono);
-                boolean colisionVaciaNA = colisionNaveAst.getBoundsInLocal().isEmpty();
-                if (colisionVaciaNA == false) {
-                    root.getChildren().remove(navePoligono);
-                    finPartida();
+                for (int i = 0 ; i < listaAsteroide.size() ; i++){
+                    asteroide = listaAsteroide.get(i);
+                    Shape colisionNaveAst = Shape.intersect(nave.getNave(), asteroide.getAsteroide());
+                    boolean colisionVaciaNA = colisionNaveAst.getBoundsInLocal().isEmpty();
+                    if (colisionVaciaNA == false) {
+                        root.getChildren().remove(nave.getNave());
+                        finPartida();
+                    }
                 }
                 //Detector de colision Misil con Asteroide
-                Shape.intersect(misilCirculo,ast.asteroidePoligono);
-                Shape colisionMisilAst = Shape.intersect(misilCirculo, ast.asteroidePoligono);
-                boolean colisionVaciaMA = colisionMisilAst.getBoundsInLocal().isEmpty();
-                if (colisionVaciaMA == false) {
-                    root.getChildren().remove(misilCirculo);
-                    root.getChildren().remove(ast.asteroidePoligono);
-//                    El Score incrementa en 1
-                    score = score +1;
-//                    Muestra el actual score
-                    textScore.setText(String.valueOf(score));                
-                    System.out.println(score);
+                for (int i = 0 ; i < listaAsteroide.size() ; i++){
+                asteroide = listaAsteroide.get(i);
+                    for (int b = 0 ; b < listaMisil.size() ; b++){
+                    misil = listaMisil.get(b);
+                        Shape.intersect(misil.getMisil(),asteroide.getAsteroide());
+                        Shape colisionMisilAst = Shape.intersect(misil.getMisil(), asteroide.getAsteroide());
+                        boolean colisionVaciaMA = colisionMisilAst.getBoundsInLocal().isEmpty();
+                        if (colisionVaciaMA == false) {
+                            root.getChildren().remove(misil.getMisil());
+                            root.getChildren().remove(asteroide.getAsteroide());
+        //                    El Score incrementa en 1
+                            score = score +1;
+        //                    Muestra el actual score
+                            textScore.setText(String.valueOf(score));                
+                            System.out.println(score);
+                        }
+                    }
                 }
+
             };
         };
         animationnave.start();        
@@ -255,53 +194,34 @@ public class Asteroids extends Application {
         scene.setOnKeyPressed((KeyEvent event) -> {
             switch(event.getCode()) {
                 case SPACE:
-                    misilCirculo = new Circle();
-                    misilCirculo.setFill(Color.RED);
-                    misilCirculo.setRadius(3);
-                    root.getChildren().add(misilCirculo);
-                    
+                    misil = new Misil(root);
     //              valora la bola para que la coloque donde este la nave
-                    posMisilX = posNaveX + 15;    
-                    posMisilY = posNaveY + 10;
-                    
+                    posMisilX = nave.posNaveX + 15;    
+                    posMisilY = nave.posNaveY + 10;
                     //Coloca el misil donde este la nave
-                    misilCirculo.setTranslateX(posMisilX);
-                    misilCirculo.setTranslateY(posMisilY);
+                    misil.getMisil().setTranslateX(posMisilX);
+                    misil.getMisil().setTranslateY(posMisilY);
                     
                     //Valora la aceleracion del misil
                     misilAce = 5;
                     
  //                 Calcula el angulo de la nave para disparar en su dirección                   
-                    double anguloMisilRadianes = Math.toRadians(anguloNave);
+                    double anguloMisilRadianes = Math.toRadians(nave.anguloNave);
                     misilVelocidadX = Math.cos(anguloMisilRadianes) * misilAce;
                     misilVelocidadY = Math.sin(anguloMisilRadianes) * misilAce;
+                    listaMisil.add(misil);
                     break;
                 case RIGHT:
 //                  Si se pulsa derecha la nave gira a una velocidad de 5 grados//
-                    anguloVelNave = +5;
+                    nave.anguloVelNave = +5;
                     break;
                 case LEFT:
 //                    Si se pulsa izquierda la nave gira a una velocidad -5 grados//                   
-                    anguloVelNave = -5;
+                    nave.anguloVelNave = -5;
                     break;
                 case UP:
-//                    Cuando pulsa arriba la nave acelera y modifica la velocidad dependiendo del ángulo
-                    naveAceleracion = 0.5;
-                    //Si se pulsa arriba la nave avanza segun donde este mirando// 
-                    moverAngulo();
-                    //Limite de velocidad para los 4 sentidos
-                    if(naveVelocidadX > 4){
-                    naveVelocidadX = 4;
-                    }
-                    if(naveVelocidadY > 4){
-                    naveVelocidadY = 4;
-                    }
-                    if(naveVelocidadX < -4){
-                    naveVelocidadX = -4;
-                    }
-                    if(naveVelocidadY < -4){
-                    naveVelocidadY = -4;
-                    }
+                    nave.moverAngulo();
+                    break;
                 case ENTER:
 //                    reinicioPartida();
             }
@@ -310,23 +230,12 @@ public class Asteroids extends Application {
         scene.setOnKeyReleased((KeyEvent event) -> {
             switch(event.getCode()){
                 case LEFT:
-                    anguloVelNave = 0;
                 case RIGHT:
-                    anguloVelNave = 0;
+                    nave.anguloVelNave = 0;
+                    break;
             }
         });
-    }
-    public void moverAngulo(){
-        double anguloNaveRadianes = Math.toRadians(anguloNave);
-        naveVelocidadX += Math.cos(anguloNaveRadianes) * naveAceleracion;
-        naveVelocidadY += Math.sin(anguloNaveRadianes) * naveAceleracion;
-    }
-    public void movimientoNave(){
-        //La nave se mueve en X constantemente
-        posNaveX += naveVelocidadX;
-        //La nave se mueve en Y constantemente  
-        posNaveY += naveVelocidadY; 
-    }
+    } 
     public void movimientoMisil(){
         //El misil aumenta la velocidad en X
         posMisilX += misilVelocidadX;
@@ -366,9 +275,9 @@ public class Asteroids extends Application {
         gameOver.setFill(Color.BLACK);
         paneGameOver.getChildren().add(gameOver);
     }
-    public void reinicioPartida(){
-        posNaveX = SCENE_TAM_X/2;
-        posNaveY = SCENE_TAM_Y/2;
-        root.getChildren().add(navePoligono);
-    }
+//    public void reinicioPartida(){
+//        posNaveX = SCENE_TAM_X/2;
+//        posNaveY = SCENE_TAM_Y/2;
+//        root.getChildren().add(navePoligono);
+//    }
 }
