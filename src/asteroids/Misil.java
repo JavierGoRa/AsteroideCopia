@@ -15,6 +15,11 @@ import javafx.scene.shape.Circle;
  */
 public class Misil {
     Circle misilCirculo;
+    double misilVelocidadX;
+    double misilVelocidadY;
+    
+    double posMisilX; 
+    double posMisilY; 
     public Misil(Pane root){
         misilCirculo = new Circle();
         misilCirculo.setFill(Color.RED);
@@ -24,4 +29,10 @@ public class Misil {
     public Circle getMisil(){
         return misilCirculo;
     }
+    public void movimientoMisil(){
+        //El misil aumenta la velocidad en X
+        posMisilX += misilVelocidadX;
+        //Posicion de la bola en Y
+        posMisilY += misilVelocidadY;
+    } 
 }

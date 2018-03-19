@@ -51,8 +51,8 @@ public class Astero{
         asteroidePoligono.setFill(Color.RED);
         root.getChildren().add(asteroidePoligono);
         Random randomAsteroide = new Random();
-        posAsteroideX = randomAsteroide.nextInt(800);
-        posAsteroideY = randomAsteroide.nextInt(600);
+        posAsteroideX = randomAsteroide.nextInt(SCENE_TAM_X);
+        posAsteroideY = randomAsteroide.nextInt(SCENE_TAM_Y);
     }
     public Polygon getAsteroide(){
         return asteroidePoligono;

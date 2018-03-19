@@ -36,11 +36,7 @@ public class Asteroids extends Application {
     
     double misilAce;
     
-    double misilVelocidadX;
-    double misilVelocidadY;
     
-    double posMisilX; 
-    double posMisilY; 
 
     
     
@@ -140,12 +136,12 @@ public class Asteroids extends Application {
                 
                 nave.mover();
                 nave.giro();
-                movimientoMisil();
+                misil.movimientoMisil();
                 
                 for (int i= 0; i <listaMisil.size(); i++){ 
                     misil = listaMisil.get(i);
-                    misil.getMisil().setTranslateX(posMisilX);
-                    misil.getMisil().setTranslateY(posMisilY);         
+                    misil.getMisil().setTranslateX(misil.posMisilX);
+                    misil.getMisil().setTranslateY(misil.posMisilY);         
                 }
                 
 //              Movimiento asteroides
@@ -172,12 +168,13 @@ public class Asteroids extends Application {
                 asteroide = listaAsteroide.get(i);
                     for (int b = 0 ; b < listaMisil.size() ; b++){
                     misil = listaMisil.get(b);
-                        Shape.intersect(misil.getMisil(),asteroide.getAsteroide());
                         Shape colisionMisilAst = Shape.intersect(misil.getMisil(), asteroide.getAsteroide());
                         boolean colisionVaciaMA = colisionMisilAst.getBoundsInLocal().isEmpty();
                         if (colisionVaciaMA == false) {
-                            root.getChildren().remove(misil.getMisil());
-                            root.getChildren().remove(asteroide.getAsteroide());
+                            listaMisil.remove(misil);
+                            root.getChildren().remove(misil.misilCirculo);
+                            listaAsteroide.remove(asteroide);
+                            root.getChildren().remove(asteroide.asteroidePoligono);
         //                    El Score incrementa en 1
                             score = score +1;
         //                    Muestra el actual score
@@ -196,19 +193,19 @@ public class Asteroids extends Application {
                 case SPACE:
                     misil = new Misil(root);
     //              valora la bola para que la coloque donde este la nave
-                    posMisilX = nave.posNaveX + 15;    
-                    posMisilY = nave.posNaveY + 10;
+                    misil.posMisilX = nave.posNaveX + 15;    
+                    misil.posMisilY = nave.posNaveY + 10;
                     //Coloca el misil donde este la nave
-                    misil.getMisil().setTranslateX(posMisilX);
-                    misil.getMisil().setTranslateY(posMisilY);
+                    misil.getMisil().setTranslateX(misil.posMisilX);
+                    misil.getMisil().setTranslateY(misil.posMisilY);
                     
                     //Valora la aceleracion del misil
                     misilAce = 5;
                     
  //                 Calcula el angulo de la nave para disparar en su dirección                   
                     double anguloMisilRadianes = Math.toRadians(nave.anguloNave);
-                    misilVelocidadX = Math.cos(anguloMisilRadianes) * misilAce;
-                    misilVelocidadY = Math.sin(anguloMisilRadianes) * misilAce;
+                    misil.misilVelocidadX = Math.cos(anguloMisilRadianes) * misilAce;
+                    misil.misilVelocidadY = Math.sin(anguloMisilRadianes) * misilAce;
                     listaMisil.add(misil);
                     break;
                 case RIGHT:
@@ -236,12 +233,7 @@ public class Asteroids extends Application {
             }
         });
     } 
-    public void movimientoMisil(){
-        //El misil aumenta la velocidad en X
-        posMisilX += misilVelocidadX;
-        //Posicion de la bola en Y
-        posMisilY += misilVelocidadY;
-    }    
+       
     public void finPartida(){
         //Caja donde va a ir los textos
         HBox paneEnd = new HBox();
