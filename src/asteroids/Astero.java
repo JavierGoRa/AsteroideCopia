@@ -19,8 +19,6 @@ import javafx.scene.shape.Polygon;
  * @author Javier
  */
 
-
-
 public class Astero{
     int SCENE_TAM_X = 800;
     int SCENE_TAM_Y = 600;
@@ -79,5 +77,19 @@ public class Astero{
         asteroidePoligono.setTranslateY(posAsteroideY);
         //Giro del asteroide
         asteroidePoligono.setRotate(rotateAsteroide += velRotateAsteroide);
+    }
+    public void asteroidePequeño(){
+        asteroidePoligono = new Polygon();
+        asteroidePoligono.getPoints().addAll(new Double []{
+            0.0, 0.0,
+            20.0, 10.0,
+            30.0, 30.0,
+            5.0, 30.0
+        });
+        asteroidePoligono.setFill(Color.RED);
+        root.getChildren().add(asteroidePoligono);
+        Random randomAsteroide = new Random();
+        posAsteroideX = posAsteroideX;
+        posAsteroideY = posAsteroideY;
     }
 }
