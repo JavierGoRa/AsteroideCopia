@@ -35,8 +35,11 @@ public class Astero{
     double rotateAsteroide;
     double velRotateAsteroide = 0.1;
     
-    double asteroideVelX = 1;
-    double asteroideVelY = 1;
+    
+    double asteroideVelX = Math.random()*-2+1;
+    double asteroideVelY = Math.random()*-2+1;
+    
+    
     
     public Astero(Pane root){	
         asteroidePoligono = new Polygon();
@@ -48,9 +51,10 @@ public class Astero{
         });
         asteroidePoligono.setFill(Color.RED);
         root.getChildren().add(asteroidePoligono);
-        Random randomAsteroide = new Random();
-        posAsteroideX = randomAsteroide.nextInt(SCENE_TAM_X);
-        posAsteroideY = randomAsteroide.nextInt(SCENE_TAM_Y);
+        Random randomAsteroidePos = new Random();
+        posAsteroideX = randomAsteroidePos.nextInt(SCENE_TAM_X);
+        posAsteroideY = randomAsteroidePos.nextInt(SCENE_TAM_Y);
+        
     }
     public Polygon getAsteroide(){
         return asteroidePoligono;
@@ -88,8 +92,5 @@ public class Astero{
         });
         asteroidePoligono.setFill(Color.RED);
         root.getChildren().add(asteroidePoligono);
-        Random randomAsteroide = new Random();
-        posAsteroideX = posAsteroideX;
-        posAsteroideY = posAsteroideY;
     }
 }

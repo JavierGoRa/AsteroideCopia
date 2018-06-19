@@ -6,23 +6,22 @@ package asteroids;
 
 
 import java.util.ArrayList;
-import java.util.Random;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -76,7 +75,8 @@ public class Asteroids extends Application {
             5.0, 10.0
         });
         furo.setFill(Color.RED);
-        root.getChildren().add(furo);
+        
+        System.out.println("Velocidad de los asteroides" + Math.random()*-2+1);
         
 //      Objeto fuego amarillo
         Polygon fuam = new Polygon();
@@ -129,7 +129,10 @@ public class Asteroids extends Application {
                 nave.mover();
                 nave.giro();
                 
-              
+                
+                furo.setRotate(nave.anguloNave+90);
+                furo.setTranslateX(nave.posNaveX-12);
+                furo.setTranslateY(nave.posNaveY+5);
                 
                 for (int i= 0; i <listaMisil.size(); i++){ 
                     
@@ -175,11 +178,6 @@ public class Asteroids extends Application {
                             //                    Muestra el actual score
                             textScore.setText(String.valueOf(score));
                             System.out.println(score);
-                            for(int z = 0; z < 2; z++){
-                            asteroide.asteroidePequeño();
-                            asteroide = new Astero(root);
-                            listaAsteroide.add(asteroide);
-                            }
                         }
                     }
                 }
@@ -218,6 +216,10 @@ public class Asteroids extends Application {
                     break;
                 case UP:
                     nave.moverAngulo();
+                    root.getChildren().add(furo);
+                    root.getChildren().remove(furo);
+                    
+                    
                     break;
                 case ENTER:
 //                    reinicioPartida();
@@ -267,9 +269,5 @@ public class Asteroids extends Application {
         gameOver.setFill(Color.BLACK);
         paneGameOver.getChildren().add(gameOver);
     }
-//    public void reinicioPartida(){
-//        posNaveX = SCENE_TAM_X/2;
-//        posNaveY = SCENE_TAM_Y/2;
-//        root.getChildren().add(navePoligono);
-//    }
+
 }
