@@ -13,7 +13,7 @@
 
 * **Javier González Ramírez**
 
-*This is a job class*
+*This is a class job*
 
 
 ## Contact 
